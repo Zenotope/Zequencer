@@ -9,5 +9,9 @@
     "clean": "rm -rf public",
     "deploy": "cp -a client/build/. public/",
     "heroku-postbuild": "npm run clean && npm run build && npm run deploy"
+  },
+  "dependencies": {
+    "@tonaljs/tonal": "^4.6.5",
+    "tone": "^14.7.77"
   }
 }

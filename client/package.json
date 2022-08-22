@@ -1,31 +1,36 @@
 {
-  "name": "react-rails-api-project-template-client",
+  "name": "step-sequencer",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:3000",
-  "engines": {
-    "node": "16.x"
-  },
   "dependencies": {
-    "@testing-library/jest-dom": "^5.13.0",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^12.8.3",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
-    "web-vitals": "^1.1.2"
+    "@fortawesome/fontawesome-svg-core": "^1.2.18",
+    "@fortawesome/free-solid-svg-icons": "^5.8.2",
+    "@fortawesome/react-fontawesome": "^0.1.4",
+    "@tonaljs/tonal": "^4.6.5",
+    "gh-pages": "^2.0.1",
+    "jwt-decode": "^3.1.2",
+    "lodash": "^4.17.19",
+    "react": "^16.8.6",
+    "react-burger-menu": "^2.7.1",
+    "react-dom": "^16.8.6",
+    "react-icons": "^4.4.0",
+    "react-pro-sidebar": "^0.7.1",
+    "react-router-dom": "^6.3.0",
+    "react-scripts": "3.0.1",
+    "startaudiocontext": "^1.2.1",
+    "tonal": "^2.2.2",
+    "tone": "^13.8.34"
   },
   "scripts": {
-    "start": "PORT=4000 react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "extends": "react-app"
   },
   "browserslist": {
     "production": [
@@ -38,5 +43,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "devDependencies": {
+    "gh-pages": "^2.0.1"
+  },
+  "homepage": "https://sam-parsons.github.io/step-sequencer/"
 }

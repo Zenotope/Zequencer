@@ -1,0 +1,31 @@
+.root {
+  padding: 1em 0.5em;
+  background: #28282c;
+  border-radius: 4px;
+  display: grid;
+  margin-bottom: 1%;
+  justify-content: space-between;
+  width: 45vw;
+  /* grid-template-rows: auto; */
+}
+.wrapperTop {
+  display: inline-flex;
+  width: 100%;
+}
+.wrapperBottom {
+  display: inline-flex;
+}
+@media (max-width: 640px) {
+  .root {
+    display: grid;
+  }
+
+#transport{
+  position: absolute;
+  top: 100%
+}
+
+#controls{
+  position: relative;
+}
+}
