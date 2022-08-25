@@ -32,3 +32,31 @@ button {
   align-items: center;
   
 }
+
+.info {
+  color: #0ccaff;
+  font-size: 18px;
+  padding: 0px 30px 0px 30px;
+  margin: 0px
+}
+
+#controls {
+  /* border-style: solid ;
+  border-color: black; */
+  padding: 15px 0px 15px 0px;
+  justify-content: center;
+}
+
+.effects {
+  justify-content: center;
+}
+
+select{
+  background-color: #1e1e21;
+  color: white
+}
+
+input{
+  background-color: #1e1e21;
+  color: white
+}

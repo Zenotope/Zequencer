@@ -2,7 +2,11 @@ import React from "react";
 import styles from "./VolumeSlider.module.css";
 
 const VolumeSlider = props => (
+  <div>
+     <p className="info">Volume</p>
+  
   <div className={styles.root}>
+   
     <input
       type="range"
       min="-60"
@@ -13,6 +17,7 @@ const VolumeSlider = props => (
         props.onVolumeChange(e.target.value);
       }}
     />
+  </div>
   </div>
 );
 

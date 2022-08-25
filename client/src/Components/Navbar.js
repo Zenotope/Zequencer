@@ -7,8 +7,9 @@ import { IconContext } from 'react-icons';
 import Presets from "./Presets.js";
 import jwt_decode from "jwt-decode"
 
-function Navbar({presets, changePreset, updatePreset, deletePreset, user, setUser, setUserId}) {
+function Navbar({presets, changePreset, updatePreset, deletePreset, user, setUser, setUserId, setLoggedIn, loggedIn}) {
   const [sidebar, setSidebar] = useState(false);
+  
 
   const showSidebar = () => setSidebar(!sidebar);
 
@@ -33,7 +34,7 @@ function Navbar({presets, changePreset, updatePreset, deletePreset, user, setUse
         .then((response) => response.json())
         .then((data) => {
             console.log(data)
-            // data = null
+            //  data = null
             if(data === null){
                 let data = {
                     first_name: userObject.given_name,
@@ -52,6 +53,7 @@ function Navbar({presets, changePreset, updatePreset, deletePreset, user, setUse
             console.log("Success:", data)
         })
             }
+        setLoggedIn(true)
         setUserId(data[0].id)
         console.log(data[0].id)
         })
@@ -60,6 +62,7 @@ function Navbar({presets, changePreset, updatePreset, deletePreset, user, setUse
   
   function handleSignOut(event) {
     setUser({})
+    setLoggedIn(false)
     document.getElementById("signInDiv").hidden = false
     localStorage.removeItem("user")
     setUserId("")
@@ -80,7 +83,7 @@ function Navbar({presets, changePreset, updatePreset, deletePreset, user, setUse
             <div id="signInDiv"></div>
             {Object.keys(user).length !== 0 &&
               <div>
-              <h2>Hello {user.name}</h2>
+              <h2 className="info">Hello {user.name}</h2>
               <button onClick={(e)=> handleSignOut(e)}>Sign Out</button> 
               </div>
             }
@@ -94,13 +97,19 @@ function Navbar({presets, changePreset, updatePreset, deletePreset, user, setUse
                 <AiIcons.AiOutlineClose />
               </Link>
             </li>
+
             <div>
-                <Presets 
+                {loggedIn ? (
+                    <Presets 
                 presets={presets}
                 changePreset={changePreset}
                 updatePreset={updatePreset}
                 deletePreset={deletePreset}
                 />
+                    
+                ):(
+                    <h2 className="info">Log In To Save Presets</h2>
+                )}
             </div>
           </ul>
         </nav>

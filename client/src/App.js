@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import Tone from "tone";
+import * as Tone from 'tone'
 import _ from "lodash";
-import Title from "./Components/Title";
+// import Title from "./Components/Title";
 import Buttons from "./Components/Buttons";
 import StepSequence from "./Components/StepSequence";
-import Presets from "./Components/Presets";
+// import Presets from "./Components/Presets";
 import "./App.css";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -13,12 +13,13 @@ import {
   faRecycle,
   faInfoCircle
 } from "@fortawesome/free-solid-svg-icons";
-import StartAudioContext from "startaudiocontext";
+// import StartAudioContext from "startaudiocontext";
 import { Scale } from "@tonaljs/tonal";
-import jwt_decode from "jwt-decode"
-import e from "cors";
+
+// import e from "cors";
 import Navbar from "./Components/Navbar"
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 
 
 
@@ -29,7 +30,7 @@ function toggleBox(priorChecked, i, row) {
 }
 
 
-const context = new AudioContext();
+// const context = new AudioContext();
 
 // fontawesome library setup
 library.add(faPlay);
@@ -57,7 +58,7 @@ function App() {
   const[mode, setMode] = useState("major")
   const[octave, setOctave] = useState("3")
   // const[notes, setNotes] = useState("")
-  const[maxTempo, setMaxTempo] = useState(300)
+  // const[maxTempo, setMaxTempo] = useState(300)
   const[isActive, setIsActive] = useState([
     [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 , 1], 
     [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 , 1], 
@@ -69,8 +70,8 @@ function App() {
   ])
   const[renderedNotes, setRenderedNotes] = useState([])
   const[partContainer, setPartContainer] = useState([])
-  const[landscape, setLandscape] = useState(false)
-  const[velocity, setVelocity] = useState(.4)
+  // const[landscape, setLandscape] = useState(false)
+  const[velocity, setVelocity] = useState(.3)
   const[sound, setSound] = useState("sine")
   const[volume, setVolume] = useState(-3)
 
@@ -81,25 +82,27 @@ function App() {
   const[user, setUser] = useState({})
   const[userId, setUserId] = useState("")
   const[presetName, setPresetName] = useState("")
+  const [loggedIn, setLoggedIn] = useState(false)
 
   const[presets, setPresets] = useState([])
 
   let scale = `${key}${octave} ${mode}`
   let noteSet = Scale.get(scale).notes
 
-  let pingPong = new Tone.PingPongDelay("8n", .2).toMaster()
-  pingPong.wet.value = 0
+  const [pingPongDryWet, setPingPongDryWet] = useState(0)
+  const [distDryWet, setDistDryWet] = useState(0)
+  
+  let pingPong = new Tone.PingPongDelay({wet: pingPongDryWet, delayTime:"8n", feedback: .2})
+  let dist = new Tone.Distortion({wet: distDryWet, distortion: 0.6});
+  let limiter = new Tone.Limiter(-3)
 
-  let dist = new Tone.Distortion(0.8).toMaster();
-  dist.wet.value = 0
+
 
   // let reverb = new Tone.Reverb(2).toMaster();
   // reverb.wet.value = 0
 
-  const synth = new Tone.PolySynth(4, Tone.Synth, {oscillator: {type: sound}, volume: volume}).chain(pingPong, dist,  Tone.Master);
-
-
-  console.log(userId)
+   const synth = new Tone.PolySynth(4, Tone.Synth, {envelope: {attack: 0.005, decay: 0.1, release: 1, sustain: 0.3,}, oscillator: {type: sound}, volume: volume}).chain(pingPong, dist, limiter, Tone.Master);
+  //const synth = new Tone.Synth().toDestination();
 
   function handleSavePreset(e){
     e.preventDefault();
@@ -134,12 +137,21 @@ function App() {
 
   function onCreatePreset(newPreset){
     setPresets([...presets, newPreset])
+    fetch('http://localhost:4000/presets')
+    .then(res => res.json())
+    //.then((presets)=> setPresets(presets.filter((preset) => preset.user_id === userId)))
+    // .then(console.log(userId))
+    .then((presets)=> setPresets(presets))
   }
+
+
 
   useEffect(()=> {
     fetch('http://localhost:4000/presets')
     .then(res => res.json())
-    .then((presets)=> setPresets(presets.filter((preset) => preset.user_id === user.id)))
+    //.then((presets)=> setPresets(presets.filter((preset) => preset.user_id === userId)))
+    // .then(console.log(userId))
+    .then((presets)=> setPresets(presets))
   }, [user])
   //   .then((presets)=> setPresets(presets))
   // }, [])
@@ -147,6 +159,7 @@ function App() {
   // Tone.connect(synth, reverb)
   // Tone.connect(synth, pingPong)
   ;
+
 
 function changePreset(preset){
   let items = preset.grid
@@ -176,7 +189,13 @@ function changePreset(preset){
   setSound(preset.sound)
   generateMetronome()
   
+  fetch('http://localhost:4000/presets')
+    .then(res => res.json())
+    //.then((presets)=> setPresets(presets.filter((preset) => preset.user_id === userId)))
+    // .then(console.log(userId))
+    .then((presets)=> setPresets(presets))
 }
+
 
 
 function updatePreset(id, presetName){
@@ -209,37 +228,10 @@ function deletePreset(id){
 }
 
 
-// function handleCallbackResponse(response) { 
-//   console.log(response.credential)
-//   let userObject = jwt_decode(response.credential);
-//   console.log(userObject)
-//   setUser(userObject)
-//   document.getElementById("signInDiv").hidden = true
-
-// }  
-
-// function handleSignOut(event) {
-//   setUser({})
-//   document.getElementById("signInDiv").hidden = false
-// }
-
-// useEffect(()=> {
-//   /* global google*/
-//   google.accounts.id.initialize({
-//     client_id: "942707319234-peaf4c81oi1mds997rof8depfgbhncjf.apps.googleusercontent.com",
-//     callback: handleCallbackResponse
-//   })
-//   google.accounts.id.renderButton(
-//     document.getElementById("signInDiv"),
-//     { theme: "outline", size: "large"}
-//   )
-// }, [])
-
   useEffect (() => {
     generateMetronome();
     // starts both audio contexts on mounting
-    StartAudioContext(Tone.context);
-    StartAudioContext(context);
+    
 
     // event listener for space, enter and 't'
     // window.addEventListener("keydown", e => {
@@ -286,15 +278,12 @@ function deletePreset(id){
       
         if (isPlaying) {
           setIsPlaying(!isPlaying)
-          //stop transport, turn off looping - prevents collision with measure sequence loop
           Tone.Transport.stop();
           Tone.Transport.loop = false;
           Tone.Transport.loopEnd = 0;
-          // isActive array zeroed out
           setIsActive([[], [], [], [], [], [], []])
           console.log("stopped");
         } else {
-          // configure looping for step sequencer
           setIsPlaying(!isPlaying)
           Tone.Transport.loop = true;
           Tone.Transport.loopStart = 0;
@@ -307,6 +296,8 @@ function deletePreset(id){
     ;
   };
 
+
+
   const onLengthChange = sequenceLength => {
     // create a new checked array and push simple everyother note pattern
     // const checked = [[], [], [], [], [], [], []];
@@ -317,45 +308,15 @@ function deletePreset(id){
     setSequenceLength(sequenceLength)
     setChecked(checked)
     Tone.Transport.loopEnd = (sequenceLength * 15) / tempo;
-    generateMetronome();
-      
+    
+    
     ;
   };
 
-  // const restartPlaying = () => {
-  //   if (isPlaying) {
-  //     setIsPlaying({ isPlaying: isPlaying }, () => {
-  //       Tone.Transport.stop();
-  //       Tone.Transport.loopStart = 0;
-  //       Tone.Transport.loopEnd =
-  //         (sequenceLength * 15) / tempo;
-  //       Tone.Transport.loop = true;
-  //       Tone.Transport.start("+0.0");
-  //       console.log("playing restarted");
-  //     });
-  //   } else {
-  //     console.error("restartPlaying called while not playing");
-  //   }
-  // };
+  useEffect(()=> {
+    generateMetronome();
+  }, [sequenceLength])
 
-  // onLengthChange = sequenceLength => {
-  //   // create a new checked array and push simple everyother note pattern
-  //   const checked = [[], [], []];
-  //   for (let i = 0; i < sequenceLength; i++) {
-  //     checked[0].push(i === 0);
-  //     checked[1].push(i !== 0 && i % 2 === 0);
-  //   }
-  //   this.setState(
-  //     () => ({
-  //       sequenceLength,
-  //       checked
-  //     }),
-  //     () => {
-  //       Tone.Transport.loopEnd = (sequenceLength * 30) / this.state.tempo;
-  //       this.generateMetronome();
-  //     }
-  //   );
-  // };
 
   const onTempoChange = tempo => {
     setTempo(tempo)
@@ -486,11 +447,7 @@ function deletePreset(id){
       }
     }
 
-    // console.log(scale)
-    // console.log(noteSet)
-    // console.log(renderedNotes);
-    // console.log(matrix)
-
+  
     // create new Part, start Part, push Part to container
     const part = new Tone.Part((time, value) => {
       triggerVisualize(value.index);
@@ -528,14 +485,13 @@ function deletePreset(id){
 
   const onKeyFilter = (inputKey) => {
    setKey(inputKey)
-   console.log(key)
-   noteSet = Scale.get(scale).notes
-   generateMetronome()
   };
+
+useEffect(() => {
+  noteSet = Scale.get(scale).notes
+  generateMetronome()
+}, [key, mode, octave])
   
-  useEffect(()=> {
-    console.log(key)
-  }, [key])
 
   const onModeFilter = (inputMode)=> {
     setMode(inputMode)
@@ -552,8 +508,11 @@ function deletePreset(id){
 
   function onSoundChange(inputSound){
     setSound(inputSound)
-    generateMetronome()
   }
+
+  useEffect(()=> {
+    generateMetronome()
+  }, [sound])
 
   function onVolumeChange(inputVolume){
       setVolume(inputVolume)
@@ -563,26 +522,27 @@ function deletePreset(id){
   function delayToggle(){
     if (delay === true){
         setDelay(false)
-        pingPong.wet.value = 0
-        generateMetronome()
+        setPingPongDryWet(0)
     }
     else{
       setDelay(true)
-      pingPong.wet.value = .5
-      generateMetronome() 
+      setPingPongDryWet(.5)   
   }
   }
+
+  useEffect(()=> { 
+    generateMetronome() 
+  },[pingPongDryWet, distDryWet])
+
 
   function distortionToggle(){
     if (distortion === true){
       setDistortion(false)
-      dist.wet.value= 0
-      generateMetronome() 
+      setDistDryWet(0)
     }
     else{
       setDistortion(true)
-      dist.wet.value= .8
-      generateMetronome() 
+      setDistDryWet(.8)
     }
   }
 
@@ -599,7 +559,6 @@ function deletePreset(id){
   // }
 
 
-  // console.log(Scale.names())
  
     return (
       <div className="App">
@@ -612,6 +571,8 @@ function deletePreset(id){
           user={user}
           setUser={setUser}
           setUserId={setUserId}
+          setLoggedIn={setLoggedIn}
+          loggedIn={loggedIn}
           />
         {/* <Routes>
           <Route path="/"/>
@@ -620,15 +581,16 @@ function deletePreset(id){
       </Router>
       <main>
         <header className="App-header">
-      
 
+       {loggedIn ? (   
         <div className="presetSave">
           <form  onSubmit={(e)=>handleSavePreset(e)}>
-          <input classname="presetName" type="text" onChange={event=> setPresetName(event.target.value)}></input>
+          <input className="presetName" type="text" onChange={event=> setPresetName(event.target.value)}></input>
             <input type="submit" value="Save Preset"></input>
           </form>
             
         </div>
+       ): (<div></div>)}
        
           <Buttons
             isPlaying={isPlaying}

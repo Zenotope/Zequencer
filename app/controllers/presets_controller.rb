@@ -2,9 +2,14 @@
 class PresetsController < ApplicationController
     # wrap_parameters format: [:grid]
 
-    def index 
-        presets = Preset.all 
-        render json: presets
+    # def index 
+    #     presets = Preset.all 
+    #     render json: presets
+    # end
+
+    def index
+        preset = Preset.where(params[:user_id])
+        render json: preset
     end
 
     def show 

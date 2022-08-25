@@ -4,10 +4,11 @@ import PresetCard from "./PresetCard"
 
 const Presets = props => {
 
-//   console.log(props.presets)
+
  
   const presetCollection = props.presets.map((preset) => (
     <PresetCard
+        name={preset.name}
         preset={preset}
         changePreset={props.changePreset}
         updatePreset={props.updatePreset}

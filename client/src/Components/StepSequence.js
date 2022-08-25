@@ -13,6 +13,7 @@ const StepSequence = props => {
         <div>
         {/* <button type="number">{props.notes[i]}</button> */}
         <BoxRow
+        key={i}
         checked={props.checked}
         onToggle={props.onToggle}
         sequenceLength={props.sequenceLength}

@@ -2,7 +2,7 @@ import React from "react";
 
 const PresetCard = props => {
 
-    
+
     function handleDeletePreset(){
         fetch(`http://localhost:4000/presets/${props.preset.id}`, {
             method: "DELETE",
